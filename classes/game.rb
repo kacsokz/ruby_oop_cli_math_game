@@ -1,34 +1,48 @@
 class Game
   
-  def initialize
-
+  def initialize(player_one, player_two)
+    @player_one = player_one
+    @player_two = player_two
+    @active_player = @player_one
   end
 
   def start_game
-    puts "----- NEW TURN -----"
+    ## new rounds will launch as long as both players have lives
+    while @player_one.lives.positive? && @player_two.lives.positive?
+      if @active_player == @player_one
+        new_round(@player_one)
+        @active_player = @player_two
+      else
+        new_round(@player_two)
+        @active_player = @player_one
+      end
+    end
+    ## game over sequence launches once the while loop is broken
+    game_over
+  end
+
+  def new_round(player)
+    puts "----- NEW ROUND -----"
     num1 = rand(20)
     num2 = rand(20)
-    puts "Player 1: What does #{num1} plus #{num2} equal?"
-    # puts "Player #{player.id}: What does #{num1} plus #{num2} equal?"
-    user_input = gets.chomp
+    puts "Player #{player.id}: What does #{num1} plus #{num2} equal?"
+    user_input = gets.chomp.to_i
 
-    puts user_input.to_i == (num1 + num2) ? "Player 1: YES! You are correct." : "Player 1: Seriously? No!"
-    # puts user_input.to_i == (num1 + num2) ? "Player #{player.id}: YES! You are correct." : "Player #{player.id}: Seriously? No!"
+    if user_input == (num1 + num2)
+      puts "Player #{player.id}: YES! You are correct."
+    else
+      puts "Player #{player.id}: Seriously? No!"
+      player.lives -= 1
+    end
 
-    ## prints score
-    puts "P1: 0/3 vs P2: 2/3"
-    # puts "P1: #{lives}/3 vs P2: #{lives}/3"
+    puts "P1: #{@player_one.lives}/3 vs P2: #{@player_two.lives}/3"
 
   end
 
   def game_over
-    # game_over sequence
-    # When either player reaches lives = 0
-    puts "Player 2 wins with a score of 2/3"
-    # puts "Player #{player.id} wins with a score of #{lives}/3"
+    player = @player_one.lives.zero? ? @player_two : @player_one
     puts "----- GAME OVER -----"
-    puts "Good bye!"
+    puts "Player #{player.id} wins with a score of #{player.lives}/3"
   end
-
 
 end
